@@ -34,13 +34,13 @@ const AddLike = ({
   }, [threadId, currentUserId]);
 
   const handleClick = async () => {
+    setIsLiked((prevIsLiked) => !prevIsLiked);
+    
     await addLikeToThread({
       threadId,
       userId: currentUserId,
       path: pathname,
     });
-
-    setIsLiked((prevIsLiked) => !prevIsLiked);
   };
 
   return (

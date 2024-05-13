@@ -7,6 +7,7 @@ import Topbar from "@/components/shared/Topbar";
 import LeftSidebar from "@/components/shared/LeftSidebar";
 import RightSidebar from "@/components/shared/RightSidebar";
 import Bottombar from "@/components/shared/Bottombar";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,9 +32,9 @@ export default function RootLayout({
             <section className = "main-container">
               <div className = "w-full max-w-4xl">
                 {children}
+                <SpeedInsights/>
               </div>
             </section>
-
             <RightSidebar/>
           </main>
           <Bottombar/>

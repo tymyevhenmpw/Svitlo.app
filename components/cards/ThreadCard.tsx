@@ -3,6 +3,7 @@ import Link from "next/link";
 import AddLike from "../interface/LikeThread";
 import DeleteThread from "../interface/DeleteThread";
 import ShareThread from "../interface/ShareThread";
+import { formatDateString } from "@/lib/utils";
 
 interface Props {
     id: string;
@@ -130,20 +131,43 @@ const ThreadCard = ({
                                         : null
                                     }
                                 </div>
-                                {isComment && comments.length > 0 ? (
-                                    <Link href={`/thread/${id}`}>
-                                        <p className="mt-1 text-subtle-medium text-gray-1">{comments.length} replies</p>
-                                    </Link>
-                                ): null}
-                                {likedBy.length > 0
-                                    ? <Link href={`/likes/${id}`}><p className="ml-1 text-subtle-medium text-primary-experimental md:hidden">{ likedBy.length > 1 ? `${likedBy.length} likes` : `${likedBy.length} like`}</p></Link>
-                                    : null
-                                }
-                                {!repostedOn && reposts.length > 0
-                                    ? <Link href={`/reposts/${id}`}><p className="ml-1 text-subtle-medium text-primary-experimental md:hidden">{ reposts.length > 1 ? `${reposts.length} reposts` : `${reposts.length} repost`}</p></Link>
-                                    : null
-                                }
+                                <div className="flex gap-2">
+                                    {isComment && comments.length > 0 ? (
+                                        <Link href={`/thread/${id}`}>
+                                            <p className="mt-1 text-subtle-medium text-gray-1">{comments.length} replies</p>
+                                        </Link>
+                                    ): null}
+                                    {likedBy.length > 0
+                                        ? <Link href={`/likes/${id}`}><p className="ml-1 text-subtle-medium text-primary-experimental md:hidden">{ likedBy.length > 1 ? `${likedBy.length} likes` : `${likedBy.length} like`}</p></Link>
+                                        : null
+                                    }
+                                    {!repostedOn && reposts.length > 0
+                                        ? <Link href={`/reposts/${id}`}><p className="ml-1 text-subtle-medium text-primary-experimental md:hidden">{ reposts.length > 1 ? `${reposts.length} reposts` : `${reposts.length} repost`}</p></Link>
+                                        : null
+                                    }
+                                </div>
                             </div>
+
+                            {!isComment && community ? (
+                                <Link href={`/communities/${community.id}`} className="mt-5 flex items-center">
+                                    <p className="text-subtle-medium text-gray-1">
+                                        {formatDateString(createdAt)}
+                                        - {community.name} Community
+                                    </p>
+
+                                    <Image
+                                        src={community.image}
+                                        alt={community.name}
+                                        width={14}
+                                        height={14}
+                                        className="ml-1 rounded-full object-cover"
+                                    />
+                                </Link>
+                            ) : (
+                                <p className="text-subtle-medium text-gray-1">
+                                    {formatDateString(createdAt)}
+                                </p>
+                            )}
                         </div>
                     </div>
                         <DeleteThread threadId={id.toString()} currentUserId={currentUserId} author={author.id}/>
@@ -250,6 +274,27 @@ const ThreadCard = ({
                                     </div>
                                 </article>
                             </div>
+
+                            {!isComment && community ? (
+                                <Link href={`/communities/${community.id}`} className="mt-5 flex items-center">
+                                    <p className="text-subtle-medium text-gray-1">
+                                        {formatDateString(createdAt)}
+                                        - {community.name} Community
+                                    </p>
+
+                                    <Image
+                                        src={community.image}
+                                        alt={community.name}
+                                        width={14}
+                                        height={14}
+                                        className="ml-1 rounded-full object-cover"
+                                    />
+                                </Link>
+                            ) : (
+                                <p className="mt-5 text-subtle-medium text-gray-1">
+                                    {formatDateString(createdAt)}
+                                </p>
+                            )}
                         </div>
                     </div>
                         <DeleteThread threadId={id.toString()} currentUserId={currentUserId} author={author.id}/>

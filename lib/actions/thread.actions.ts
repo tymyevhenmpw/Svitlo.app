@@ -6,6 +6,7 @@ import User from "../models/user.model";
 import { connectToDB } from "../mongoose";
 import { createHashtag } from "./hashtag.actions";
 import Hashtag from "../models/hashtag.model";
+import Community from "../models/community.model";
 
 interface Params {
     text: string,
@@ -24,11 +25,16 @@ export async function createThread({ text, author, communityId, repostedOn, path
     try {
         connectToDB();
 
+        const communityIdObject = await Community.findOne(
+            { id: communityId },
+            { _id: 1 }
+        );
+
         const createdThread = await Thread.create({
             text,
             author,
             repostedOn: repostedOn,
-            community: undefined,
+            community: communityIdObject,
         });
 
         if(repostedOn){
@@ -42,6 +48,13 @@ export async function createThread({ text, author, communityId, repostedOn, path
         await User.findByIdAndUpdate(author, {
             $push: { threads: createdThread._id}
         });
+
+        if (communityIdObject) {
+            // Update Community model
+            await Community.findByIdAndUpdate(communityIdObject, {
+              $push: { threads: createdThread._id },
+            });
+          }
 
         await extractHashtags(createdThread._id, author, path);
 
@@ -116,6 +129,10 @@ export async function fetchPosts(pageNumber = 1, pageSize = 20, userId: string) 
                 select: "_id id name image"
             }
         })
+        .populate({
+            path: "community",
+            model: Community,
+          })
 
         const totalPostsCount = await Thread.countDocuments({ parentId: { $in: [null, undefined]} });
 
@@ -160,6 +177,10 @@ export async function fetchNewFollowedUsersPosts(pageNumber = 1, pageSize = 20, 
                 select: "_id id name image"
             }
         })
+        .populate({
+            path: "community",
+            model: Community,
+          })
 
     const followedUsersPosts = await followedUsersPostQuery.exec();
 
@@ -182,7 +203,6 @@ export async function fetchNewFollowedUsersPosts(pageNumber = 1, pageSize = 20, 
 export async function fetchThreadById(id: string) {
     connectToDB();
 
-    // TODO: Populate Community
     try {
         const thread = await Thread.findById(id)
             .populate({
@@ -216,7 +236,12 @@ export async function fetchThreadById(id: string) {
                     model: User,
                     select: "_id id name image"
                 }
-            }).exec();
+            })
+            .populate({
+                path: "community",
+                model: Community,
+                select: "_id id name image",
+              }).exec();
 
             return thread;
     } catch (error: any) {
@@ -337,6 +362,8 @@ export async function deleteThread({
         const currentUser = await User.findOne({ id: userId });
         const usersWhoLikedThread = await User.find({ _id: { $in: currentThread.likedBy } });
         const commentThreads = await Thread.find({ parentId: currentThread._id });
+        const community = await Community.findOne({ id: currentThread.cummunity});
+        console.log(community);
 
         if(!currentThread) {
             throw new Error("Thread not found")
@@ -479,7 +506,12 @@ export async function fetchThreadsReposts(threadId: string, pageNumber = 1, page
                     model: User,
                     select: "_id id name image"
                 }
-        })
+            })
+            .populate({
+                path: "community",
+                model: Community,
+                select: "_id id name image",
+            })
 
         const totalPostsCount = await Thread.countDocuments({
             repostedOn: { $in: currentThread._id }
@@ -519,6 +551,11 @@ export async function fetchUsersReposts(accountId: string, pageNumber = 1, pageS
             model: User,
             select: "_id id name image"
         }
+    })
+    .populate({
+        path: "community",
+        model: Community,
+        select: "_id id name image",
     })
 
     const totalPostsCount = await Thread.countDocuments({ 

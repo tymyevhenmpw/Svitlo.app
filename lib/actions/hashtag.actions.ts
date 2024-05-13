@@ -6,6 +6,7 @@ import Thread from "../models/thread.model";
 import User from "../models/user.model";
 import { connectToDB } from "../mongoose";
 import { M_PLUS_1 } from "next/font/google";
+import Community from "../models/community.model";
 
 interface Params {
     threadId: string,
@@ -65,7 +66,12 @@ export async function fetchAllThreadsUnderHashtag(pageNumber = 1, pageSize = 20,
                     model: User,
                     select: "_id id name image"
                 }
-            });
+            })
+            .populate({
+                path: "community",
+                model: Community,
+                select: "_id id name image",
+            })
 
         const totalPostsCount = await Thread.countDocuments({ parentId: { $in: [null, undefined]}, hashtags: { $in: hashtag.text}});
 

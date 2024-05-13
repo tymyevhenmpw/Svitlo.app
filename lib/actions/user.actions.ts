@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { connectToDB } from "../mongoose";
 import Thread from "../models/thread.model";
 import { FilterQuery, SortOrder } from "mongoose";
+import Community from "../models/community.model";
 
 interface Params {
     userId: string,
@@ -96,6 +97,11 @@ export async function fetchUserPosts(userId: string) {
                             model: User,
                             select: 'id name image'
                         }
+                    },
+                    {
+                        path: "community",
+                        model: Community,
+                        select: "_id id name image",
                     }
                 ]
             })  
