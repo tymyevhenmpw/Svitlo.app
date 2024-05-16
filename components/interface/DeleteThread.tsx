@@ -14,8 +14,10 @@ interface Props {
 
 const DeleteThread = ({ threadId, currentUserId, author }: Props) => {
 
-    const [toRender, setToRender] = useState(false);
+    const [ toRender, setToRender ] = useState(false);
     const pathname = usePathname();
+
+    const [ loading, setLoading ] = useState(false);
 
     useEffect(() => {
         const fetchRender = async () => {
@@ -31,16 +33,22 @@ const DeleteThread = ({ threadId, currentUserId, author }: Props) => {
     }, [threadId, currentUserId])
 
     const handleDelete = async () => {
-        await deleteThread({ threadId, userId: currentUserId, path: pathname})
+        setLoading(true);
+
+        try{
+            await deleteThread({ threadId, userId: currentUserId, path: pathname});
+        } finally {
+            setLoading(false);
+        }
     }
 
     return( 
         toRender ? (<Image
-                src="/assets/delete.svg"
+                src={loading ? "/assets/spinner.svg" : "/assets/delete.svg"}
                 width={16}
                 height={16}
                 alt="Delete"
-                className="cursor-pointer object-contain mt-[-8px] mr-[-4px]"
+                className={`cursor-pointer object-contain mt-[-8px] mr-[-4px] border-[#FF4D4D] rounded-full ${!loading && "hover:border-2"}`}
                 onClick={handleDelete}
             />): null)
     ;

@@ -75,36 +75,69 @@ export async function fetchUserPosts(userId: string) {
         // Find all threads authored by user with the given userId
 
         // TODO: Populate community
-        const threads = await User.findOne({ id: userId })
-          .populate({
-            path: 'threads',
-            model: Thread,
-            populate: [
-                    {
-                        path: 'children',
-                        model: Thread,
-                        populate: {
-                            path: 'author',
-                            model: User,
-                            select: 'name image id'
-                        }
-                    },
-                    {
-                        path: 'repostedOn',
-                        model: Thread,
-                        populate: {
-                            path: 'author',
-                            model: User,
-                            select: 'id name image'
-                        }
-                    },
-                    {
-                        path: "community",
-                        model: Community,
-                        select: "_id id name image",
-                    }
-                ]
-            })  
+        // const threads = await User.findOne({ id: userId })
+        //   .populate({
+        //     path: 'threads',
+        //     model: Thread,
+        //     populate: [
+        //             {
+        //                 path: 'children',
+        //                 model: Thread,
+        //                 populate: {
+        //                     path: 'author',
+        //                     model: User,
+        //                     select: 'name image id'
+        //                 }
+        //             },
+        //             {
+        //                 path: 'repostedOn',
+        //                 model: Thread,
+        //                 populate: {
+        //                     path: 'author',
+        //                     model: User,
+        //                     select: 'id name image'
+        //                 }
+        //             },
+        //             {
+        //                 path: "community",
+        //                 model: Community,
+        //                 select: "_id id name image",
+        //             }
+        //         ]
+        //     })  
+
+          const user = await User.findOne({ id: userId});
+
+          const threads = await Thread.find({ author: user._id, parentId: null })
+            .sort({ createdAt: 'desc' })
+            .populate({
+                path: 'author',
+                model: User,
+                select: 'name username image id'
+            })
+            .populate({
+                path: 'children',
+                model: Thread,
+                populate: {
+                    path: 'author',
+                    model: User,
+                    select: 'name image id'
+                }
+            })
+            .populate({
+                path: 'repostedOn',
+                model: Thread,
+                populate: {
+                    path: 'author',
+                    model: User,
+                    select: 'id name image'
+                }
+            })
+            .populate({
+                path: "community",
+                model: Community,
+                select: "_id id name image",
+            })
 
           return threads;
     } catch (error: any) {

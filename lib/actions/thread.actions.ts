@@ -363,43 +363,84 @@ export async function deleteThread({
         const usersWhoLikedThread = await User.find({ _id: { $in: currentThread.likedBy } });
         const commentThreads = await Thread.find({ parentId: currentThread._id });
         const community = await Community.findOne({ id: currentThread.cummunity});
-        console.log(community);
 
         if(!currentThread) {
             throw new Error("Thread not found")
         }
 
         if(currentUser._id  = currentThread.author) {
-            await currentUser.threads.pull(currentThread._id);
-
-            if(currentThread.repostedOn){
-                const repostedThread = await Thread.findById({ _id: currentThread.repostedOn});
-
-                await repostedThread.reposts.pull(currentThread._id);
-
-                await repostedThread.save();
-            }
-            for(const user of usersWhoLikedThread) {
-                await user.liked.pull(currentThread._id);
-                await user.save();
-            }
-
-            const hashtags = await Hashtag.find({ text: { $in: currentThread.hashtags}});
-
-            if(hashtags) {
-                for(const hashtag of hashtags) {
-                    await hashtag.threads.pull(currentThread._id)
-
-                    await hashtag.save();
-                }
-            }
-
-            await deleteComments(threadId);
-
             await Thread.findByIdAndDelete(threadId);
 
-            await currentUser.save();
+            revalidatePath(path);
+            
+            try {
+                
+                await currentUser.threads.pull(currentThread._id);
 
+            } catch (error: any) {
+                throw new Error(`Error updating author after deleting: ${error.message}`)
+            }
+            
+            try {
+
+                if(currentThread.repostedOn){
+                    const repostedThread = await Thread.findById({ _id: currentThread.repostedOn});
+                    
+                    if(repostedThread){
+                        await repostedThread.reposts.pull(currentThread._id);
+        
+                        await repostedThread.save();
+                    }
+                }
+
+            } catch (error: any) {
+                throw new Error(`Error updating reposts after deleting thread: ${error.message}`)
+            }
+
+            try {
+                if(currentThread.reposts){
+                    const threadsReposts = await Thread.find({ _id: { $in: currentThread.reposts } });
+
+                    for(const threadRepost of threadsReposts) {
+                        threadRepost.repostedOn = null;
+
+                        await threadRepost.save();
+                    }
+                }
+            } catch (error: any) {
+                throw new Error(`Error turning thread's reposts into a regular threads: ${error.message}`)
+            }
+            try {
+
+                for(const user of usersWhoLikedThread) {
+                    await user.liked.pull(currentThread._id);
+                    await user.save();
+                }
+
+            } catch (error: any) {
+                throw new Error(`Error updating the users, who liked thread, after deleting: ${error.message}`)
+            }
+            
+            try {
+
+                const hashtags = await Hashtag.find({ text: { $in: currentThread.hashtags}});
+                
+                if(hashtags) {
+                    for(const hashtag of hashtags) {
+                        await hashtag.threads.pull(currentThread._id)
+                        
+                        await hashtag.save();
+                    }
+            }
+
+            } catch (error: any) {
+                throw new Error(`Error updating hashtags after deleting: ${error.message}`)
+            }
+            
+            await deleteComments(threadId);
+
+            await currentUser.save();
+            
             revalidatePath(path);
         }
 
