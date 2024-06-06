@@ -91,7 +91,7 @@ export async function extractHashtags(threadId: string, author: string, path: st
     }
 }
 
-export async function fetchPosts(pageNumber = 1, pageSize = 20, userId: string) {
+export async function fetchPosts(pageNumber: number, pageSize = 10, userId: string) {
     connectToDB();
 
     // Calculate the number of posts to skip
@@ -102,15 +102,15 @@ export async function fetchPosts(pageNumber = 1, pageSize = 20, userId: string) 
 
     const followedUsers = currentUser.following;
 
-    const newFollowedUsersPosts = await fetchNewFollowedUsersPosts(1, 20, userId)
+    // const newFollowedUsersPosts = await fetchNewFollowedUsersPosts(1, 20, userId)
 
-    const remainingPostsCount = pageSize - newFollowedUsersPosts.length;
+    // const remainingPostsCount = pageSize - newFollowedUsersPosts.length;
 
     // Fetch the posts that have no parents (top-level threads...)
-    const postsQuery = Thread.find({ author: { $nin: followedUsers }, parentId: { $in: [null, undefined] } })
+    const postsQuery = Thread.find({ parentId: { $in: [null, undefined] } })
         .sort({ createdAt: 'desc' })
-        .skip(Math.max(0, skipAmount - newFollowedUsersPosts.length))
-        .limit(remainingPostsCount)
+        .skip(skipAmount)
+        .limit(pageSize)
         .populate({ path: 'author', model: User })
         .populate({
             path: 'children',
@@ -138,14 +138,12 @@ export async function fetchPosts(pageNumber = 1, pageSize = 20, userId: string) 
 
         const posts = await postsQuery.exec();
 
-        const allPosts = newFollowedUsersPosts.concat(posts)
-
         const isNext = totalPostsCount > skipAmount + posts.length;
 
-        return { posts: allPosts, isNext }
+        return { posts: posts, isNext }
 };
 
-export async function fetchNewFollowedUsersPosts(pageNumber = 1, pageSize = 20, userId: string){
+export async function fetchStringifiedPosts(pageNumber: number, pageSize = 10, userId: string) {
     connectToDB();
 
     // Calculate the number of posts to skip
@@ -156,7 +154,12 @@ export async function fetchNewFollowedUsersPosts(pageNumber = 1, pageSize = 20, 
 
     const followedUsers = currentUser.following;
 
-    const followedUsersPostQuery = Thread.find({ author: { $in: followedUsers }, parentId: { $in: [null, undefined] } })
+    // const newFollowedUsersPosts = await fetchNewFollowedUsersPosts(1, 20, userId)
+
+    // const remainingPostsCount = pageSize - newFollowedUsersPosts.length;
+
+    // Fetch the posts that have no parents (top-level threads...)
+    const postsQuery = Thread.find({ parentId: { $in: [null, undefined] } })
         .sort({ createdAt: 'desc' })
         .skip(skipAmount)
         .limit(pageSize)
@@ -169,6 +172,7 @@ export async function fetchNewFollowedUsersPosts(pageNumber = 1, pageSize = 20, 
                 select: "_id name parentId image"
             }
         })
+        .populate({ path: 'likedBy', model: User, select: "_id id name image" })
         .populate({
             path: 'repostedOn',
             populate: {
@@ -182,23 +186,69 @@ export async function fetchNewFollowedUsersPosts(pageNumber = 1, pageSize = 20, 
             model: Community,
           })
 
-    const followedUsersPosts = await followedUsersPostQuery.exec();
+        const totalPostsCount = await Thread.countDocuments({ parentId: { $in: [null, undefined]} });
 
-    const threeDays = 3 * 24 * 60 * 60 * 1000;
+        const posts = await postsQuery.exec();
 
-        const olderThanThreeDaysThreads = followedUsersPosts.filter(thread => {
-            const currentDate = new Date().getTime();
-            const threadCreationDate = new Date(thread.createdAt).getTime();
+        const isNext = totalPostsCount > skipAmount + posts.length;
 
-            const timeDifference = currentDate - threadCreationDate;
+        return JSON.stringify(posts);
+};
 
-            return timeDifference > threeDays
-        })
+// export async function fetchNewFollowedUsersPosts(pageNumber = 1, pageSize = 20, userId: string){
+//     connectToDB();
 
-    const newFollowedUsersPosts = followedUsersPosts.filter(thread => !olderThanThreeDaysThreads.includes(thread));
+//     // Calculate the number of posts to skip
+//     const skipAmount = (pageNumber - 1) * pageSize;
 
-    return newFollowedUsersPosts;
-}
+//     // Fetch the posts of the users, who are followed
+//     const currentUser = await User.findOne({ id: userId });
+
+//     const followedUsers = currentUser.following;
+
+//     const followedUsersPostQuery = Thread.find({ author: { $in: followedUsers }, parentId: { $in: [null, undefined] } })
+//         .sort({ createdAt: 'desc' })
+//         .skip(skipAmount)
+//         .limit(pageSize)
+//         .populate({ path: 'author', model: User })
+//         .populate({
+//             path: 'children',
+//             populate: {
+//                 path: 'author',
+//                 model: User,
+//                 select: "_id name parentId image"
+//             }
+//         })
+//         .populate({
+//             path: 'repostedOn',
+//             populate: {
+//                 path: 'author',
+//                 model: User,
+//                 select: "_id id name image"
+//             }
+//         })
+//         .populate({
+//             path: "community",
+//             model: Community,
+//           })
+
+//     const followedUsersPosts = await followedUsersPostQuery.exec();
+
+//     const threeDays = 3 * 24 * 60 * 60 * 1000;
+
+//         const olderThanThreeDaysThreads = followedUsersPosts.filter(thread => {
+//             const currentDate = new Date().getTime();
+//             const threadCreationDate = new Date(thread.createdAt).getTime();
+
+//             const timeDifference = currentDate - threadCreationDate;
+
+//             return timeDifference > threeDays
+//         })
+
+//     const newFollowedUsersPosts = followedUsersPosts.filter(thread => !olderThanThreeDaysThreads.includes(thread));
+
+//     return newFollowedUsersPosts;
+// }
 
 export async function fetchThreadById(id: string) {
     connectToDB();

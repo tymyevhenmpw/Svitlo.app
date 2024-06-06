@@ -1,4 +1,6 @@
 import ThreadCard from "@/components/cards/ThreadCard";
+import Load from "@/components/shared/Load";
+import { Spinner } from "@/components/shared/Spinner";
 import { fetchPosts } from "@/lib/actions/thread.actions";
 import { UserButton } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs";
@@ -10,7 +12,7 @@ export default async function Home() {
 
   if(!user) return null;
   
-  const result = await fetchPosts(1, 30, user.id);
+  const result = await fetchPosts(1, 10, user.id);
 
   return (
     <>
@@ -40,6 +42,8 @@ export default async function Home() {
             ))}
           </>
         )}
+
+        <Load id={user.id}/>
       </section>
     </>
   )

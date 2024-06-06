@@ -41,3 +41,7 @@ export function formatThreadCount(count: number): string {
     return `${threadCount} ${threadWord}`;
   }
 }
+
+export function delay(ms: number) {
+  new Promise(resolve => setTimeout(resolve, ms))
+};
