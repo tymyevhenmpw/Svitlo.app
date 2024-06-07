@@ -11,8 +11,8 @@ import {
 import { deleteThread, renderCreatorFunctional } from "@/lib/actions/thread.actions";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { Spinner } from "../shared/Spinner";
+import { useEffect, useState } from "react";
+import { useInView } from "react-intersection-observer";
 
 interface Props {
   threadId: string;
@@ -26,6 +26,16 @@ const ThreadDropDownMenu = ({ threadId, currentUserId, author }: Props) => {
   const pathname = usePathname();
 
   const [ loading, setLoading ] = useState(false);
+
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+  });
+
+  useEffect(() => {
+    if (inView) {
+      fetchRender();
+    }
+  }, [inView]);
 
   const fetchRender = async () => {
     try {
@@ -49,12 +59,12 @@ const ThreadDropDownMenu = ({ threadId, currentUserId, author }: Props) => {
   }
 
   return (
-    <div onMouseEnter={fetchRender} onClick={fetchRender} onMouseOver={fetchRender}>
+    <div>
       <DropdownMenu>
-          <DropdownMenuTrigger onMouseEnter={fetchRender} onClick={fetchRender} onMouseOver={fetchRender}>
+          <DropdownMenuTrigger>
               <Image src="/assets/ellipsis-horizontal.svg" height={24} width={24} alt="More"/>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent ref={ref}>
               <DropdownMenuLabel>Svitlo</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {toRender ? (<DropdownMenuItem>
