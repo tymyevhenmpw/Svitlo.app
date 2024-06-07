@@ -4,6 +4,7 @@ import AddLike from "../interface/LikeThread";
 import DeleteThread from "../interface/DeleteThread";
 import ShareThread from "../interface/ShareThread";
 import { formatDateString } from "@/lib/utils";
+import ThreadDropDownMenu from "../interface/ThreadDropDownMenu";
 
 interface Props {
     id: string;
@@ -170,7 +171,8 @@ const ThreadCard = ({
                             )}
                         </div>
                     </div>
-                        <DeleteThread threadId={id.toString()} currentUserId={currentUserId} author={author.id}/>
+                        <ThreadDropDownMenu threadId={id.toString()} currentUserId={currentUserId} author={author.id}/>
+                        {/* <DeleteThread threadId={id.toString()} currentUserId={currentUserId} author={author.id}/> */}
                 </div>
             </article>
         )
@@ -297,7 +299,8 @@ const ThreadCard = ({
                             )}
                         </div>
                     </div>
-                        <DeleteThread threadId={id.toString()} currentUserId={currentUserId} author={author.id}/>
+                        <ThreadDropDownMenu threadId={id.toString()} currentUserId={currentUserId} author={author.id}/>
+                        {/* <DeleteThread threadId={id.toString()} currentUserId={currentUserId} author={author.id}/> */}
                 </div>
             </article>
         )
