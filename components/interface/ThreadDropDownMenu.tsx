@@ -12,6 +12,7 @@ import { deleteThread, renderCreatorFunctional } from "@/lib/actions/thread.acti
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { Spinner } from "../shared/Spinner";
 
 interface Props {
   threadId: string;
@@ -48,15 +49,15 @@ const ThreadDropDownMenu = ({ threadId, currentUserId, author }: Props) => {
   }
 
   return (
-    <div onMouseEnter={fetchRender}>
+    <div onMouseEnter={fetchRender} onClick={fetchRender} onMouseOver={fetchRender}>
       <DropdownMenu>
-          <DropdownMenuTrigger  onClick={fetchRender}>
+          <DropdownMenuTrigger onMouseEnter={fetchRender} onClick={fetchRender} onMouseOver={fetchRender}>
               <Image src="/assets/ellipsis-horizontal.svg" height={24} width={24} alt="More"/>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuLabel>Svitlo</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              {toRender && <DropdownMenuItem>
+              {toRender ? (<DropdownMenuItem>
                 <div className="flex px-2 gap-2 rounded-xl" onClick={handleDelete}>
                   <Image
                     src={loading ? "/assets/spinner.svg" : "/assets/delete.svg"}
@@ -67,7 +68,7 @@ const ThreadDropDownMenu = ({ threadId, currentUserId, author }: Props) => {
                   />
                   <p>Delete</p>
                 </div>
-              </DropdownMenuItem>}
+              </DropdownMenuItem>) : (<DropdownMenuItem><p>Loading...</p></DropdownMenuItem>)}
           </DropdownMenuContent>
       </DropdownMenu>
     </div>
