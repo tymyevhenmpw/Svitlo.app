@@ -74,11 +74,15 @@ const ThreadDropDownMenu = ({ threadId, currentUserId, author }: Props) => {
                     width={16}
                     height={16}
                     alt="Delete"
-                    className={`cursor-pointer object-contain mr-[-4px] border-[#FF4D4D] rounded-full ${!loading && "hover:border-2"}`}
+                    className={`cursor-pointer object-contain border-[#FF4D4D] rounded-full ${!loading && "hover:border-2"}`}
                   />
-                  <p>Delete</p>
+                  <p className="text-red-500">Delete</p>
+                  {loading && (
+                    <Image height={24} width={24} src="/assets/spinner.svg" alt="Loading"/>
+                  )}
                 </div>
-              </DropdownMenuItem>) : (<DropdownMenuItem><p>Loading...</p></DropdownMenuItem>)}
+              </DropdownMenuItem>) : (<DropdownMenuItem><Image height={24} width={24} src="/assets/spinner.svg" alt="Loading"/></DropdownMenuItem>)}
+              {!toRender ? (<DropdownMenuItem><p className="text-subtle-medium">Comming soon.</p></DropdownMenuItem>) : (<DropdownMenuItem><Image height={24} width={24} src="/assets/spinner.svg" alt="Loading"/></DropdownMenuItem>)}
           </DropdownMenuContent>
       </DropdownMenu>
     </div>
