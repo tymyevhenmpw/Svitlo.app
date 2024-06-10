@@ -39,10 +39,9 @@ const ThreadDropDownMenu = ({ threadId, currentUserId, author }: Props) => {
 
   const fetchRender = async () => {
     try {
-        const render = await renderCreatorFunctional({threadId: threadId, userId: currentUserId});
-        setToRender(render);
-
-        console.log(render);
+      if(currentUserId === author) {
+        setToRender(true);
+      }
     } catch (error) {
         console.error(`Error fetching, whether to render creator functional status ${error}`)
     }

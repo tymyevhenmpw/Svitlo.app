@@ -22,8 +22,9 @@ const DeleteThread = ({ threadId, currentUserId, author }: Props) => {
     useEffect(() => {
         const fetchRender = async () => {
             try {
-                const render = await renderCreatorFunctional({threadId: threadId, userId: currentUserId});
-                setToRender(render);
+                if(currentUserId === author) {
+                    setToRender(true);
+                }
             } catch (error) {
                 console.error(`Error fetching, whether to render creator functional status ${error}`)
             }
