@@ -9,22 +9,25 @@ import { currentUser } from "@clerk/nextjs";
 interface Props {
   threadId: string;
   currentUserId: string;
-  isComment?: boolean;
-  parentId?: string | null;
+  likedBy: string;
 }
 
 const AddLike = ({
   threadId,
   currentUserId,
+  likedBy,
 }: Props) => {
+  const usersWhoLiked = JSON.parse(likedBy);
+
   const [isLiked, setIsLiked] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
     const fetchIsLiked = async () => {
       try {
-        const liked = await isThreadLiked({ threadId, userId: currentUserId });
-        setIsLiked(liked);
+        if(usersWhoLiked.some((user: { id: string })=> user.id === currentUserId)) {
+          setIsLiked(true);
+        }
       } catch (error) {
         console.error(`Error fetching like status ${error}`);
       }

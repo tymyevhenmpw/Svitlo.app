@@ -101,7 +101,7 @@ const ThreadCard = ({
 
                             <div className={`${isComment && "mb-12"} mt-5 flex flex-col gap-3`}>
                                 <div className="flex gap-3.5">
-                                    <AddLike threadId={id.toString()} currentUserId={currentUserId}/>
+                                    <AddLike threadId={id.toString()} currentUserId={currentUserId} likedBy={JSON.stringify(likedBy)}/>
 
                                     <Link href={`/thread/${id}`}>
                                         <Image src="/assets/reply.svg" alt="reply" width={24}
@@ -203,7 +203,7 @@ const ThreadCard = ({
 
                             <div className={`${isComment && "mb-12"} mt-5 flex flex-col gap-3`}>
                                 <div className="flex gap-3.5">
-                                    <AddLike threadId={id.toString()} currentUserId={currentUserId}/>
+                                    <AddLike threadId={id.toString()} currentUserId={currentUserId} likedBy={JSON.stringify(likedBy)}/>
 
                                     <Link href={`/thread/${id}`}>
                                         <Image src="/assets/reply.svg" alt="reply" width={24}

@@ -554,20 +554,20 @@ export async function renderCreatorFunctional({threadId, userId}: {threadId: str
     }
 }
 
-export async function fetchUsersWhoLikedThread(threadId: string) {
-    connectToDB();
+// export async function fetchUsersWhoLikedThread(threadId: string) {
+//     connectToDB();
 
-    try {
+//     try {
         
-        const currentThread = await Thread.findById(threadId).populate({ path: 'likedBy', model: User, select: "_id id image name username"});
+//         const currentThread = await Thread.findById(threadId).populate({ path: 'likedBy', model: User, select: "_id id image name username"});
 
-        const usersWhoLiked = currentThread.likedBy;
+//         const usersWhoLiked = currentThread.likedBy;
         
-        return usersWhoLiked;
-    } catch (error: any) {
-        throw new Error(`Error fetching users, who liked thread ${error.message}`)
-    }
-}
+//         return usersWhoLiked;
+//     } catch (error: any) {
+//         throw new Error(`Error fetching users, who liked thread ${error.message}`)
+//     }
+// }
 
 export async function fetchThreadsReposts(threadId: string, pageNumber = 1, pageSize = 20) {
     connectToDB();
