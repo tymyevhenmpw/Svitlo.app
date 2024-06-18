@@ -25,7 +25,7 @@ const AddLike = ({
   useEffect(() => {
     const fetchIsLiked = async () => {
       try {
-        if(usersWhoLiked.some((user: { id: string })=> user.id === currentUserId)) {
+        if(usersWhoLiked.some((user: { id: string }) => user.id === currentUserId)) {
           setIsLiked(true);
         }
       } catch (error) {

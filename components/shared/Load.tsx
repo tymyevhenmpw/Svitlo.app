@@ -58,7 +58,6 @@ const Load = ({ id }: { id: string }) => {
 
     const handleFetchMore = async () => {
         setStartFetching(true);
-        console.log('Fetching more posts...');
         try {
           const fetchedPosts = await fetchStringifiedPosts(pagesLoaded, 10, id);
 
@@ -69,9 +68,8 @@ const Load = ({ id }: { id: string }) => {
           }
 
           setResult(prev => [...prev, ...posts]);
-          console.log('Fetched posts:', posts);
-        } catch (error) {
-          console.error('Error fetching posts:', error);
+        } catch (error: any) {
+            throw new Error(`Error fetching more users: ${error.message}`)
         } finally {
           setStartFetching(false);
         }

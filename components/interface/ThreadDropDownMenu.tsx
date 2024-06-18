@@ -67,15 +67,15 @@ const ThreadDropDownMenu = ({ threadId, currentUserId, author }: Props) => {
               <DropdownMenuLabel>Svitlo</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {toRender ? (<DropdownMenuItem>
-                <div className="flex px-2 gap-2 rounded-xl" onClick={handleDelete}>
+                <div className="w-full flex px-2 justify-between rounded-xl cursor-pointer" onClick={handleDelete}>
+                  <p className="text-red-500">Delete</p>
                   <Image
                     src={loading ? "/assets/spinner.svg" : "/assets/delete.svg"}
                     width={16}
                     height={16}
                     alt="Delete"
-                    className={`cursor-pointer object-contain border-[#FF4D4D] rounded-full ${!loading && "hover:border-2"}`}
+                    className={`object-contain rounded-full`}
                   />
-                  <p className="text-red-500">Delete</p>
                   {loading && (
                     <Image height={24} width={24} src="/assets/spinner.svg" alt="Loading"/>
                   )}

@@ -150,33 +150,35 @@ export async function fetchUsers({
     searchString = "",
     pageNumber = 1,
     pageSize = 20,
-    sortBy = "desc"
-} : {
+    sortBy = "desc",
+    path
+}: {
     userId: string;
-    searchString?: string;
-    pageNumber?: number;
-    pageSize?: number;
-    sortBy?: SortOrder;
+    searchString: string;
+    pageNumber: number;
+    pageSize: number;
+    sortBy: "asc" | "desc";
+    path: string;
 }) {
     try {
-        connectToDB();
+        await connectToDB();
 
         const skipAmount = (pageNumber - 1) * pageSize;
 
         const regex = new RegExp(searchString, "i");
 
         const query: FilterQuery<typeof User> = {
-           id: { $ne: userId}
-        }
+            id: { $ne: userId }
+        };
 
-        if(searchString.trim() !== "") {
+        if (searchString.trim() !== "") {
             query.$or = [
                 { username: { $regex: regex } },
                 { name: { $regex: regex } }
-            ]
+            ];
         }
 
-        const sortOptions = { createdAt: sortBy};
+        const sortOptions = { createdAt: sortBy };
 
         const usersQuery = User.find(query)
             .sort(sortOptions)
@@ -189,9 +191,13 @@ export async function fetchUsers({
 
         const isNext = totalUsersCount > skipAmount + users.length;
 
-        return { users, isNext };
+        if(pageNumber === 1){
+            console.log(path)
+            revalidatePath(path);
+        }
+        return JSON.stringify(users);
     } catch (error: any) {
-        throw new Error(`Failed to fetch users: ${error.message}`)
+        throw new Error(`Failed to fetch users: ${error.message}`);
     }
 }
 
