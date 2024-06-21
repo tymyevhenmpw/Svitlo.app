@@ -23,6 +23,7 @@ export default function RootLayout(
                     <div className="w-full flex flex-col justify-center items-center min-h-screen">
                         <h1 className="mb-2 text-heading1-bold text-primary-experimental">Svitlo</h1>
                         {children}
+                        <p className="text-body-normal mt-3 text-primary-experimental">Powered by <span className="gradient-text text-heading4-medium cursor-help">Copper Group</span></p>
                     </div>
                 </body>
             </html>

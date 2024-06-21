@@ -114,6 +114,18 @@
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #7878a3;
   }
+
+  .gradient-text {
+    background: linear-gradient(45deg, color(display-p3 0.5209 0.2695 0.0747), color(display-p3 1 0.7175 0.3876));
+    background: -webkit-radial-gradient(45deg, #662E00, #D47800);
+    background: -moz-radial-gradient(45deg, #662E00, #D47800);
+    background: -o-radial-gradient(45deg, #662E00, #D47800);
+
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  
+  }
 }
 
 /* Clerk Responsive fix */
