@@ -38,12 +38,16 @@ const SearchUsers = ({ userId }: { userId: string }) => {
             userId: userId,
             searchString: inputValue,
             pageNumber: 1,
-            pageSize: 3,
+            pageSize: 50,
             sortBy: 'desc',
             path: pathname
         });
+ 
+        let parsedUsers = [];
 
-        const parsedUsers = JSON.parse(result);
+        if(result !== ""){
+            parsedUsers = JSON.parse(result);
+        }
 
         if (parsedUsers.length === 0) {
             setLoadingState("All");
@@ -60,7 +64,7 @@ const SearchUsers = ({ userId }: { userId: string }) => {
                 userId: userId,
                 searchString: inputValue,
                 pageNumber: pagesLoaded,
-                pageSize: 3,
+                pageSize: 50,
                 sortBy: 'desc',
                 path: pathname
             });

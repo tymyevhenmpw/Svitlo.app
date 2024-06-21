@@ -172,7 +172,11 @@ export async function fetchStringifiedPosts(pageNumber: number, pageSize = 10, u
                 select: "_id name parentId image"
             }
         })
-        .populate({ path: 'likedBy', model: User, select: "_id id name image" })
+        .populate({ 
+            path: 'likedBy', 
+            model: User, select: 
+            "_id id name image" 
+        })
         .populate({
             path: 'repostedOn',
             populate: {
@@ -194,6 +198,44 @@ export async function fetchStringifiedPosts(pageNumber: number, pageSize = 10, u
 
         return JSON.stringify(posts);
 };
+
+export async function fetchThreadsComments(threadId: string){
+    try {
+        connectToDB()
+
+        const threadsComments = await Thread.find({ parentId: threadId})            
+            .populate({ path: 'author', model: User })
+            .populate({
+                path: 'children',
+                populate: {
+                    path: 'author',
+                    model: User,
+                    select: "_id name parentId image"
+                }
+            })
+            .populate({ 
+                path: 'likedBy', 
+                model: User, select: 
+                "_id id name image" 
+            })
+            .populate({
+                path: 'repostedOn',
+                populate: {
+                    path: 'author',
+                    model: User,
+                    select: "_id id name image"
+                }
+            })
+            .populate({
+                path: "community",
+                model: Community,
+            })
+
+        return threadsComments;
+    } catch (error: any) {
+        throw new Error(`Error fetching threads comments: ${error.message}`)
+    }
+}
 
 // export async function fetchNewFollowedUsersPosts(pageNumber = 1, pageSize = 20, userId: string){
 //     connectToDB();
@@ -287,12 +329,16 @@ export async function fetchThreadById(id: string) {
                     select: "_id id name image"
                 }
             })
+            .populate({ 
+                path: 'likedBy', 
+                model: User, 
+                select: "_id id name image" 
+            })
             .populate({
                 path: "community",
                 model: Community,
                 select: "_id id name image",
               }).exec();
-
             return thread;
     } catch (error: any) {
         throw new Error(`Error fetching thread: ${error.message}`)
@@ -554,20 +600,20 @@ export async function renderCreatorFunctional({threadId, userId}: {threadId: str
     }
 }
 
-// export async function fetchUsersWhoLikedThread(threadId: string) {
-//     connectToDB();
+export async function fetchUsersWhoLikedThread(threadId: string) {
+    connectToDB();
 
-//     try {
+    try {
         
-//         const currentThread = await Thread.findById(threadId).populate({ path: 'likedBy', model: User, select: "_id id image name username"});
+        const currentThread = await Thread.findById(threadId).populate({ path: 'likedBy', model: User, select: "_id id image name username"});
 
-//         const usersWhoLiked = currentThread.likedBy;
+       const usersWhoLiked = currentThread.likedBy;
         
-//         return usersWhoLiked;
-//     } catch (error: any) {
-//         throw new Error(`Error fetching users, who liked thread ${error.message}`)
-//     }
-// }
+        return usersWhoLiked;
+    } catch (error: any) {
+        throw new Error(`Error fetching users, who liked thread ${error.message}`)
+    }
+}
 
 export async function fetchThreadsReposts(threadId: string, pageNumber = 1, pageSize = 20) {
     connectToDB();
@@ -589,7 +635,11 @@ export async function fetchThreadsReposts(threadId: string, pageNumber = 1, page
                     select: "_id name parentId image"
                 }
             })
-            .populate({ path: 'likedBy', model: User, select: "_id id name image" })
+            .populate({ 
+                path: 'likedBy', 
+                model: User, 
+                select: "_id id name image" 
+            })
             .populate({
                 path: 'repostedOn',
                 populate: {
@@ -647,6 +697,11 @@ export async function fetchUsersReposts(accountId: string, pageNumber = 1, pageS
         path: "community",
         model: Community,
         select: "_id id name image",
+    })
+    .populate({ 
+        path: 'likedBy', 
+        model: User, 
+        select: "_id id name image" 
     })
 
     const totalPostsCount = await Thread.countDocuments({ 

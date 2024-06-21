@@ -138,6 +138,11 @@ export async function fetchUserPosts(userId: string) {
                 model: Community,
                 select: "_id id name image",
             })
+            .populate({ 
+                path: 'likedBy', 
+                model: User, 
+                select: "_id id name image" 
+            })
 
           return threads;
     } catch (error: any) {
@@ -176,26 +181,24 @@ export async function fetchUsers({
                 { username: { $regex: regex } },
                 { name: { $regex: regex } }
             ];
+            const sortOptions = { createdAt: sortBy };
+    
+            const usersQuery = User.find(query)
+                .sort(sortOptions)
+                .skip(skipAmount)
+                .limit(pageSize);
+    
+            const users = await usersQuery.exec();
+    
+            if(pageNumber === 1){
+                console.log(path)
+                revalidatePath(path);
+            }
+            return JSON.stringify(users);
+        } else {
+            return "";
         }
 
-        const sortOptions = { createdAt: sortBy };
-
-        const usersQuery = User.find(query)
-            .sort(sortOptions)
-            .skip(skipAmount)
-            .limit(pageSize);
-
-        const totalUsersCount = await User.countDocuments(query);
-
-        const users = await usersQuery.exec();
-
-        const isNext = totalUsersCount > skipAmount + users.length;
-
-        if(pageNumber === 1){
-            console.log(path)
-            revalidatePath(path);
-        }
-        return JSON.stringify(users);
     } catch (error: any) {
         throw new Error(`Failed to fetch users: ${error.message}`);
     }
@@ -414,5 +417,71 @@ export async function deleteFollower({userId, followId, path}: InteractParams){
         revalidatePath(path);
     } catch (error: any) {
         throw new Error(`Error deleting follower ${error.message}`)
+    }
+}
+
+export async function fetchSuggestedUsers(){
+    try {
+        const users = await User.aggregate([
+            {
+              $lookup: {
+                from: 'threads',
+                localField: '_id',
+                foreignField: 'author',
+                as: 'threads'
+              }
+            },
+            {
+              $addFields: {
+                followedSize: { $cond: { if: { $isArray: "$followed" }, then: { $size: "$followed" }, else: 0 } },
+                threadsSize: { $cond: { if: { $isArray: "$threads" }, then: { $size: "$threads" }, else: 0 } },
+                likedBySize: {
+                  $sum: {
+                    $map: {
+                      input: "$threads",
+                      as: "thread",
+                      in: { $cond: { if: { $isArray: "$$thread.likedBy" }, then: { $size: "$$thread.likedBy" }, else: 0 } }
+                    }
+                  }
+                },
+                repostsSize: {
+                  $sum: {
+                    $map: {
+                      input: "$threads",
+                      as: "thread",
+                      in: { $cond: { if: { $isArray: "$$thread.reposts" }, then: { $size: "$$thread.reposts" }, else: 0 } }
+                    }
+                  }
+                },
+                childrenSize: {
+                  $sum: {
+                    $map: {
+                      input: "$threads",
+                      as: "thread",
+                      in: { $cond: { if: { $isArray: "$$thread.children" }, then: { $size: "$$thread.children" }, else: 0 } }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              $addFields: {
+                score: {
+                  $add: [
+                    { $multiply: ["$followedSize", 3] },
+                    { $multiply: ["$likedBySize", 1] },
+                    { $multiply: ["$repostsSize", 2] },
+                    { $multiply: ["$childrenSize", 2] }
+                  ]
+                }
+              }
+            },
+            { $sort: { score: -1 } },
+            { $limit: 3}
+          ]);
+        
+          return users;
+    } catch (error: any) {
+        throw new Error(`Error fetching suggested users: ${error.message}`)
     }
 }

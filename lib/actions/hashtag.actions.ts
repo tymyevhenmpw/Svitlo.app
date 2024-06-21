@@ -72,6 +72,11 @@ export async function fetchAllThreadsUnderHashtag(pageNumber = 1, pageSize = 20,
                 model: Community,
                 select: "_id id name image",
             })
+            .populate({ 
+                path: 'likedBy', 
+                model: User, 
+                select: "_id id name image" 
+            })
 
         const totalPostsCount = await Thread.countDocuments({ parentId: { $in: [null, undefined]}, hashtags: { $in: hashtag.text}});
 

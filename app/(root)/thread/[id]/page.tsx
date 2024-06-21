@@ -1,5 +1,5 @@
 import ThreadCard from "@/components/cards/ThreadCard";
-import { fetchThreadById } from "@/lib/actions/thread.actions";
+import { fetchThreadById, fetchThreadsComments } from "@/lib/actions/thread.actions";
 import { fetchUser } from "@/lib/actions/user.actions";
 import { currentUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
@@ -15,6 +15,8 @@ const Page = async ({ params }: { params: { id: string}}) => {
     if(!userInfo?.onboarded) redirect('/onboarding');
 
     const thread = await fetchThreadById(params.id)
+
+    const threadsComments = await fetchThreadsComments(params.id);
 
     return(
         <section className="relative">
@@ -39,13 +41,13 @@ const Page = async ({ params }: { params: { id: string}}) => {
             <div className="mt-7">
                 <Comment
                     threadId={thread.id}
-                    currentUserImg={user.imageUrl}
+                    currentUserImg={userInfo.image}
                     currentUserId={JSON.stringify(userInfo._id)}
                 />
             </div>
 
             <div className="mt-10">
-                {thread.children.map((childItem: any) => (
+                {threadsComments.map((childItem: any) => (
                     <ThreadCard 
                         key={childItem._id}
                         id={childItem._id}

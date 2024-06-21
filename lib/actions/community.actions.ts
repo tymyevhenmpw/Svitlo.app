@@ -315,3 +315,66 @@ export async function deleteCommunity(communityId: string) {
     throw error;
   }
 }
+
+export async function fetchSuggestedCommunities(){
+  try {
+    
+    const suggestedCommunities = await Community.aggregate([
+      {
+        $lookup: {
+          from: 'threads',
+          localField: '_id',
+          foreignField: 'community',
+          as: 'threads'
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'members',
+          foreignField: '_id',
+          as: 'members'
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'createdBy',
+          foreignField: '_id',
+          as: 'followers'
+        }
+      },
+      {
+        $addFields: {
+          score: {
+            $add: [
+              { $multiply: [{ $size: "$members" }, 4] },
+              { $multiply: [{ $size: "$followers" }, 3] },
+              {
+                $sum: {
+                  $map: {
+                    input: "$threads",
+                    as: "thread",
+                    in: {
+                      $add: [
+                        { $multiply: [{ $size: "$$thread.likedBy" }, 1] },
+                        { $multiply: [{ $size: "$$thread.reposts" }, 2] },
+                        { $multiply: [{ $size: "$$thread.children" }, 2] }
+                      ]
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      { $sort: { score: -1 } },
+      { $limit: 5 }
+    ]);
+
+    return suggestedCommunities;
+  } catch (error: any) {
+      throw new Error(`Error fetching suggested communities: ${error.message}`)
+  }
+}
