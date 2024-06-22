@@ -34,7 +34,7 @@ const AddLike = ({
     };
 
     fetchIsLiked();
-  }, [threadId, currentUserId]);
+  }, [threadId, currentUserId, pathname]);
 
   const handleClick = async () => {
     setIsLiked((prevIsLiked) => !prevIsLiked);
