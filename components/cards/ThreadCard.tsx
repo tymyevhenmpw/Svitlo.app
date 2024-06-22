@@ -166,7 +166,7 @@ const ThreadCard = ({
                                     />
                                 </Link>
                             ) : (
-                                <p className="text-subtle-medium text-gray-1">
+                                <p className="text-subtle-medium text-gray-1 mt-2">
                                     {formatDateString(createdAt)}
                                 </p>
                             )}
@@ -296,7 +296,7 @@ const ThreadCard = ({
                                     />
                                 </Link>
                             ) : (
-                                <p className="mt-5 text-subtle-medium text-gray-1">
+                                <p className="mt-5 text-subtle-medium text-gray-1 mt-2">
                                     {formatDateString(createdAt)}
                                 </p>
                             )}
