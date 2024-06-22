@@ -81,13 +81,14 @@ const ThreadCard = ({
                     <div className="flex w-full flex-1 flex-row gap-4">
                         <div className="flex flex-col items-center">
                             <Link href={`/profile/${author.id}`} className="relative h-11 w-11">
-                                <Image
-                                    src={author.image}
-                                    alt="Profile image"
-                                    sizes="44"
-                                    fill
-                                    className="cursor-pointer rounded-full"
-                                ></Image>
+                                <div className="relative h-11 w-11 object-cover">
+                                    <Image
+                                        src={author.image}
+                                        alt="Profile image"
+                                        fill
+                                        className="rounded-full object-cover shadow-2xl"
+                                    />
+                                </div>
                             </Link>
                             <div className="thread-card_bar"/>
                         </div>
@@ -183,13 +184,14 @@ const ThreadCard = ({
                     <div className="flex w-full flex-1 flex-row gap-4">
                         <div className="flex flex-col items-center">
                             <Link href={`/profile/${author.id}`} className="relative h-11 w-11">
-                                <Image
-                                    src={author.image}
-                                    alt="Profile image"
-                                    sizes="44"
-                                    fill
-                                    className="cursor-pointer rounded-full"
-                                ></Image>
+                                <div className="relative h-11 w-11 object-cover">
+                                    <Image
+                                        src={author.image}
+                                        alt="Profile image"
+                                        fill
+                                        className="rounded-full object-cover shadow-2xl"
+                                    />
+                                </div>
                             </Link>
                             <div className="thread-card_bar"/>
                         </div>
@@ -255,13 +257,14 @@ const ThreadCard = ({
                                         <div className="flex w-full flex-1 flex-row gap-4">
                                             <div className="flex flex-col items-center">
                                                 <Link href={`/profile/${repostedOn.author.id}`} className="relative h-11 w-11">
-                                                    <Image
-                                                        src={repostedOn.author.image}
-                                                        alt="Profile image"
-                                                        sizes="44"
-                                                        fill
-                                                        className="cursor-pointer rounded-full"
-                                                    ></Image>
+                                                    <div className="relative h-11 w-11 object-cover">
+                                                            <Image
+                                                                src={repostedOn.author.image}
+                                                                alt="Profile image"
+                                                                fill
+                                                                className="rounded-full object-cover shadow-2xl"
+                                                            />
+                                                        </div>
                                                     </Link>
                                                     <div className="thread-card_bar"/>
                                             </div>

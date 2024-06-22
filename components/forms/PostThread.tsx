@@ -22,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ThreadValidation } from "@/lib/validations/thread";
 import { createThread } from "@/lib/actions/thread.actions";
 import { Input } from "../ui/input";
+import { useState } from "react";
 
 interface Props {
   user: {
@@ -40,7 +41,9 @@ function PostThread({ userId }: { userId: string }) {
     const router = useRouter();
     const pathname = usePathname();
     const { organization } = useOrganization();
-  
+
+    const [ loadingState, setLoadingState ] = useState(false);
+
     const form = useForm({
       resolver: zodResolver(ThreadValidation),
       defaultValues: {
@@ -49,14 +52,22 @@ function PostThread({ userId }: { userId: string }) {
       },
     });
     
-    const onSubmit = async (values: z.infer<typeof ThreadValidation>) =>{
-      await createThread({
-        text: values.thread,
-        author: userId,
-        communityId: organization ? organization.id : null,
-        repostedOn: null,
-        path: pathname
-      });
+    const onSubmit = async (values: z.infer<typeof ThreadValidation>) => {
+      setLoadingState(true);
+
+      try {
+        await createThread({
+          text: values.thread,
+          author: userId,
+          communityId: organization ? organization.id : null,
+          repostedOn: null,
+          path: pathname
+        });        
+      } catch (error: any) {
+        throw new Error(`Error creating new thread: ${error.message}`)
+      } finally {
+        setLoadingState(false);
+      }
 
       router.push("/")
     }
@@ -87,7 +98,7 @@ function PostThread({ userId }: { userId: string }) {
         />
         
         <Button type="submit" className="bg-primary-experimental border-2 border-solid border-primary-experimental">
-            Post Svitlo
+          {loadingState ? "Creating Svitlo..." : "Post Svitlo"}
         </Button>
       </form>
       </Form>

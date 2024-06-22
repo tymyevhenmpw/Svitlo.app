@@ -25,19 +25,19 @@ const Page = async ({ params }: { params: { text: string } }) => {
                 <>
                     {result.posts.map((post) => (
                         <ThreadCard
-                        key={post._id}
-                        id={post._id}
-                        currentUserId={user?.id || ""}
-                        parentId={post.parentId}
-                        content={post.text}
-                        author={post.author}
-                        community={post.community}
-                        createdAt={post.createdAt}
-                        likedBy={post.likedBy}
-                        hashtags={post.hashtags}
-                        comments={post.children}
-                        reposts={post.reposts}
-                        repostedOn={post.repostedOn}
+                            key={post._id}
+                            id={post._id}
+                            currentUserId={user?.id || ""}
+                            parentId={post.parentId}
+                            content={post.text}
+                            author={post.author}
+                            community={post.community}
+                            createdAt={post.createdAt}
+                            likedBy={post.likedBy}
+                            hashtags={post.hashtags}
+                            comments={post.children}
+                            reposts={post.reposts}
+                            repostedOn={post.repostedOn}
                         />
                     ))}
                 </>

@@ -11,7 +11,7 @@ export default async function Home() {
   const user = await currentUser();
 
   if(!user) return null;
-  
+
   const result = await fetchPosts(1, 10, user.id);
 
   return (

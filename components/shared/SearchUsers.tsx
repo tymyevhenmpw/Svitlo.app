@@ -116,9 +116,8 @@ const SearchUsers = ({ userId }: { userId: string }) => {
             {users.length !== 0 && (
                 <div className="mt-16">
                     {users.map((user) => (
-                        <article className="mt-5">
+                        <article className="mt-5" key={user.id}>
                             <UserCard
-                                key={user.id}
                                 id={user.id}
                                 name={user.name}
                                 username={user.username}

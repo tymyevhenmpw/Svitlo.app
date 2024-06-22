@@ -22,13 +22,14 @@ const UserCard = ({ id, name, username, imgUrl, personType, type, currentUserId 
     return (
         <article className="user-card">
             <div className="user-card_avatar">
-                <Image
-                    src={imgUrl}
-                    alt="logo"
-                    width={48}
-                    height={48}
-                    className="rounded-full"
-                />
+                <div className="relative h-14 w-14 object-cover">
+                    <Image
+                        src={imgUrl}
+                        alt="Profile image"
+                        fill
+                        className="rounded-full object-cover shadow-2xl"
+                    />
+                </div>
 
                 <div className="flex-1 text-ellipsis">
                     <h4 className="text-base-semibold text-light-1">{name}</h4>

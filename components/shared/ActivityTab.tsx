@@ -33,13 +33,14 @@ const ActivityTab = async ({ currentUserId, tabsName }: Props) => {
                 {result.map((activity: any) => (
                     <Link key={activity._id} href={`/reposts/${activity.repostedOn._id}`}>
                         <article className="activity-card">
-                            <Image
-                                src={activity.author.image}
-                                alt="Profile Picture"
-                                width={40}
-                                height={40}
-                                className="rounded-full object-cover"
-                            />
+                            <div className="relative h-11 w-11 object-cover">
+                                <Image
+                                    src={activity.author.image}
+                                    alt="Profile image"
+                                    fill
+                                    className="rounded-full object-cover shadow-2xl"
+                                />
+                            </div>
                             <p className="!text-small-regular text-light-1 max-[444px]:flex max-[444px]:flex-col">
                                 <div>
                                     <Link href={`/profile/${activity.author.id}`} className="mr-1 text-primary-experimental">
@@ -83,13 +84,15 @@ const ActivityTab = async ({ currentUserId, tabsName }: Props) => {
                 {result.map((activity: any) => (
                     <Link key={activity._id} href={`/thread/${activity.parentId}`}>
                         <article className="activity-card">
-                            <Image
-                                src={activity.author.image}
-                                alt="Profile Picture"
-                                width={40}
-                                height={40}
-                                className="rounded-full object-cover"
-                            />
+                            <div className="relative h-11 w-11 object-cover">
+                                <Image
+                                    src={activity.author.image}
+                                    alt="Profile image"
+                                    fill
+                                    className="rounded-full object-cover shadow-2xl"
+                                />
+                            </div>
+
                             <p className="!text-small-regular text-light-1 max-[444px]:flex max-[444px]:flex-col">
                                 <div>
                                     <Link href={`/profile/${activity.author.id}`} className="mr-1 text-primary-experimental">
@@ -119,14 +122,15 @@ const ActivityTab = async ({ currentUserId, tabsName }: Props) => {
                 {result.length > 0 && result.map((activity) => (
                     <Link href={`/profile/${activity.id}`} key={activity.id}>
                         <article className="activity-card">
+                            <div className="relative h-11 w-11 object-cover">
                                 <Image
                                     src={activity.image}
-                                    alt="Profile Picture"
-                                    width={40}
-                                    height={40}
-                                    className="rounded-full object-cover"
+                                    alt="Profile image"
+                                    fill
+                                    className="rounded-full object-cover shadow-2xl"
                                 />
-                                <p className="!text-small-regular text-light-1"><span className="mr-1 text-primary-experimental">{activity.name}</span> liked your thread.</p>                 
+                            </div>
+                            <p className="!text-small-regular text-light-1"><span className="mr-1 text-primary-experimental">{activity.name}</span> liked your thread.</p>                 
                         </article>
                     </Link>
                 ))}

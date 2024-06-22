@@ -22,6 +22,7 @@ import { ThreadValidation } from "@/lib/validations/thread";
 import { createThread } from "@/lib/actions/thread.actions";
 import { Input } from "../ui/input";
 import { useOrganization } from "@clerk/nextjs";
+import { useState } from "react";
 
 interface Props {
   user: {
@@ -40,6 +41,8 @@ function RepostThread({ userId, threadId }: { userId: string, threadId: string }
     const router = useRouter();
     const pathname = usePathname();
     const { organization } = useOrganization();
+
+    const [ loadingState, setLoadingState ] = useState(false);
   
     const form = useForm({
       resolver: zodResolver(ThreadValidation),
@@ -51,13 +54,21 @@ function RepostThread({ userId, threadId }: { userId: string, threadId: string }
     });
     
     const onSubmit = async (values: z.infer<typeof ThreadValidation>) => {
-      await createThread({
-        text: values.thread,
-        author: userId,
-        communityId: organization ? organization.id : null,
-        repostedOn: threadId,
-        path: pathname
-      });
+      setLoadingState(true);
+
+      try {
+        await createThread({
+          text: values.thread,
+          author: userId,
+          communityId: organization ? organization.id : null,
+          repostedOn: threadId,
+          path: pathname
+        });
+      } catch (error: any) {
+        throw new Error(`Error reposting svitlo: ${error.message}`)
+      } finally {
+        setLoadingState(false);
+      }
 
       router.push("/")
     }
@@ -88,7 +99,7 @@ function RepostThread({ userId, threadId }: { userId: string, threadId: string }
         />
         
         <Button type="submit" className="bg-primary-experimental border-2 border-solid border-primary-experimental">
-            Repost Svitlo
+          {loadingState ? "Reposting Svitlo..." : "Repost Svitlo"}
         </Button>
       </form>
       </Form>

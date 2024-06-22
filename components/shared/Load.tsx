@@ -89,9 +89,7 @@ const Load = ({ id }: { id: string }) => {
 
     return (
         <>
-            {result.length === 0 ? (
-            <p className="no-result">Loading more svitlos...</p>
-            ) : (
+            {result.length !== 0 && (
             <>
                 {result.map((post) => (
                 <ThreadCard
