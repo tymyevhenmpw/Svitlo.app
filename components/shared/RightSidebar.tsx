@@ -6,14 +6,14 @@ import SuggestedUserCard from "../cards/SuggestedUserCard";
 
 async function RightSidebar(){
 
-    const suggestedCommunities = await fetchSuggestedCommunities();
+    //const suggestedCommunities = await fetchSuggestedCommunities();
 
-    const suggestedUsers = await fetchSuggestedUsers();
+    //const suggestedUsers = await fetchSuggestedUsers();
     return (
         <section className = "custom-scrollbar rightsidebar">
             <div className = "flex flex-1 flex-col justify-start">
                 <h3 className = "text-heading4-medium text-light-1">Suggested Users</h3>
-                {suggestedUsers.length > 0 &&
+                {/* {suggestedUsers.length > 0 &&
                     (
                         <div className="flex flex-col mt-5">
                             {suggestedUsers.map((person) => (
@@ -29,11 +29,11 @@ async function RightSidebar(){
                             ))}
                         </div>
                     )
-                }
+                } */}
             </div>
             <div className = "flex flex-1 flex-col justify-start">
                 <h3 className = "text-heading4-medium text-light-1">Suggested Communities</h3>
-                {suggestedCommunities.length > 0 &&
+                {/* {suggestedCommunities.length > 0 &&
                     (
                         <div className="flex flex-col mt-5">
                             {suggestedCommunities.map((community) => (
@@ -50,7 +50,7 @@ async function RightSidebar(){
                             ))}
                         </div>
                     )
-                }
+                } */}
             </div>
         </section>
     )
