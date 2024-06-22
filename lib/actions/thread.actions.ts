@@ -100,8 +100,6 @@ export async function fetchPosts(pageNumber: number, pageSize = 10, userId: stri
     // Fetch the posts of the users, who are followed
     const currentUser = await User.findOne({ id: userId });
 
-    const followedUsers = currentUser.following;
-
     // const newFollowedUsersPosts = await fetchNewFollowedUsersPosts(1, 20, userId)
 
     // const remainingPostsCount = pageSize - newFollowedUsersPosts.length;
@@ -151,8 +149,6 @@ export async function fetchStringifiedPosts(pageNumber: number, pageSize = 10, u
 
     // Fetch the posts of the users, who are followed
     const currentUser = await User.findOne({ id: userId });
-
-    const followedUsers = currentUser.following;
 
     // const newFollowedUsersPosts = await fetchNewFollowedUsersPosts(1, 20, userId)
 
